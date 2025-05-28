@@ -1,10 +1,27 @@
-import React from "react";
+import { useState, useEffect } from "react";
 const Troll = () => {
-    const [meme, setMeme] = React.useState({
+    const [meme, setMeme] = useState({
         topText: "One does not simply",
         bottomText: "walk into mordor",
-        randomImage: "http://i.imgflip.com/1bij.jpg"
+        imgUrl: "http://i.imgflip.com/1bij.jpg"
     })
+
+    const [allMemes, setAllMemes] = useState([])
+
+    useEffect(() => {
+         fetch("https://api.imgflip.com/get_memes")
+         .then(res => res.json())
+         .then(data => setAllMemes(data.data.memes))
+    }, [])
+
+    function getNewMeme(){
+        const randomNumber = Math.floor(Math.random() * allMemes.length)
+        const newMemeUrl = allMemes[randomNumber].url
+        setMeme(prevMeme => ({
+            ...prevMeme,
+            imgUrl: newMemeUrl
+        }))
+    }
 
     function handleChange(event){
          const {value, name} = event.currentTarget;
@@ -34,9 +51,9 @@ const Troll = () => {
                     />
                 </label>
             </div>
-            <button className="meme-btn">Get a new meme image</button>
+            <button className="meme-btn" onClick={getNewMeme}>Get a new meme image</button>
             <div className="meme">
-                <img src={meme.randomImage} alt="meme was here" />
+                <img src={meme.imgUrl} alt="meme was here" />
                 <span className="top">{meme.topText}</span>
                 <span className="bottom">{meme.bottomText}</span>
             </div>
